@@ -1,0 +1,1343 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hobby Finder</title>
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(109, 94, 252, 0.08), transparent 28%),
+        radial-gradient(circle at right 20%, rgba(20, 184, 166, 0.08), transparent 24%),
+        #f6f8fc;
+      color: #1f2937;
+      line-height: 1.5;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; border: 0; }
+    img { display: block; width: 100%; }
+    ul { list-style: none; padding: 0; margin: 0; }
+
+    :root {
+      --primary: #6d5efc;
+      --primary-dark: #5446e8;
+      --sub: #14b8a6;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --soft-line: #edf1f7;
+      --card: rgba(255,255,255,0.88);
+      --white: #ffffff;
+      --shadow: 0 18px 40px rgba(33, 40, 73, 0.10);
+      --shadow-hover: 0 24px 44px rgba(33, 40, 73, 0.16);
+      --radius-xxl: 32px;
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+      --max: 1200px;
+    }
+
+    .container {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(14px);
+      background: rgba(246, 248, 252, 0.78);
+      border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 16px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--sub));
+      box-shadow: 0 16px 24px rgba(109, 94, 252, 0.22);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .nav a {
+      position: relative;
+      padding: 6px 0;
+      transition: color 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      width: 0;
+      height: 2px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--primary), var(--sub));
+      transition: width 0.25s ease;
+    }
+
+    .nav a:hover {
+      color: var(--primary);
+    }
+
+    .nav a:hover::after {
+      width: 100%;
+    }
+
+    .hero {
+      padding: 54px 0 30px;
+    }
+
+    .hero-wrap {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .card-surface {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.7);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-xxl);
+    }
+
+    .hero-card,
+    .test-card,
+    .result-card,
+    .category-card,
+    .hobby-card,
+    .popular-card,
+    .feature-card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.7);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-xl);
+    }
+
+    .hero-card {
+      position: relative;
+      overflow: hidden;
+      padding: 46px;
+      background:
+        radial-gradient(circle at top right, rgba(109, 94, 252, 0.16), transparent 32%),
+        radial-gradient(circle at left bottom, rgba(20, 184, 166, 0.16), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9));
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      right: -60px;
+      top: -60px;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(109, 94, 252, 0.12), transparent 70%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 15px;
+      border-radius: 999px;
+      background: rgba(109, 94, 252, 0.08);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.92rem;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: clamp(2.2rem, 5vw, 4.3rem);
+      line-height: 1.06;
+      letter-spacing: -0.05em;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 1.03rem;
+      color: var(--muted);
+      max-width: 640px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 22px;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: 0.25s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      box-shadow: 0 14px 24px rgba(109, 94, 252, 0.28);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 28px rgba(109, 94, 252, 0.32);
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 18px rgba(33, 40, 73, 0.08);
+    }
+
+    .hero-side {
+      padding: 28px;
+      display: grid;
+      gap: 16px;
+      align-content: center;
+      background: linear-gradient(160deg, #ffffff, #f3f7ff);
+    }
+
+    .mini-stat {
+      background: rgba(255,255,255,0.96);
+      border: 1px solid var(--soft-line);
+      border-radius: 22px;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .mini-stat:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 24px rgba(33, 40, 73, 0.08);
+    }
+
+    .mini-stat span {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .mini-stat strong {
+      display: block;
+      font-size: 1.4rem;
+      margin-top: 4px;
+      letter-spacing: -0.03em;
+    }
+
+    .mini-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(109, 94, 252, 0.14), rgba(20, 184, 166, 0.14));
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .section {
+      padding: 40px 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(1.65rem, 3vw, 2.25rem);
+      letter-spacing: -0.03em;
+    }
+
+    .section-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .section-link {
+      color: var(--primary);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .section-link:hover {
+      text-decoration: underline;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .feature-card {
+      padding: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,250,255,0.96));
+      transition: 0.28s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(109, 94, 252, 0.12), rgba(20, 184, 166, 0.12));
+      margin-bottom: 14px;
+      font-size: 1.25rem;
+    }
+
+    .feature-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.08rem;
+    }
+
+    .feature-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .chip {
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.95);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-weight: 700;
+      transition: 0.22s ease;
+    }
+
+    .chip.active,
+    .chip:hover {
+      color: #fff;
+      border-color: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      box-shadow: 0 10px 18px rgba(109, 94, 252, 0.2);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .hobby-card {
+      overflow: hidden;
+      transition: 0.3s ease;
+      position: relative;
+    }
+
+    .hobby-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .hobby-thumb {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      background: #ddd;
+    }
+
+    .hobby-thumb::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.18), transparent 45%);
+      opacity: 0;
+      transition: opacity 0.28s ease;
+    }
+
+    .hobby-card:hover .hobby-thumb::after {
+      opacity: 1;
+    }
+
+    .hobby-thumb img {
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .hobby-card:hover .hobby-thumb img {
+      transform: scale(1.08);
+    }
+
+    .hobby-body {
+      padding: 18px;
+    }
+
+    .tag {
+      display: inline-flex;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(20, 184, 166, 0.11);
+      color: #0f766e;
+      font-weight: 700;
+      font-size: 0.83rem;
+      margin-bottom: 12px;
+    }
+
+    .hobby-body h3 {
+      margin: 0 0 8px;
+      font-size: 1.14rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hobby-body p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      min-height: 66px;
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      padding-top: 12px;
+      border-top: 1px solid #f0f2f7;
+    }
+
+    .popular-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .popular-card {
+      padding: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,250,255,0.96));
+      transition: 0.28s ease;
+    }
+
+    .popular-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .popular-rank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--primary), var(--sub));
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.95rem;
+      margin-bottom: 14px;
+    }
+
+    .popular-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.08rem;
+    }
+
+    .popular-card p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 0.94rem;
+      min-height: 44px;
+    }
+
+    .popular-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(109, 94, 252, 0.08);
+      color: var(--primary);
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
+    .test-layout {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .test-card,
+    .result-card {
+      padding: 30px;
+    }
+
+    .test-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,250,255,0.96));
+    }
+
+    .question {
+      margin-bottom: 22px;
+      padding: 20px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid #edf1f7;
+    }
+
+    .question h3 {
+      margin: 0 0 12px;
+      font-size: 1.08rem;
+    }
+
+    .option-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .option {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--text);
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .option:hover,
+    .option.selected {
+      border-color: var(--primary);
+      background: rgba(109, 94, 252, 0.08);
+      color: var(--primary);
+      box-shadow: 0 10px 18px rgba(109, 94, 252, 0.08);
+    }
+
+    .progress {
+      height: 10px;
+      border-radius: 999px;
+      background: #eceff4;
+      overflow: hidden;
+      margin: 20px 0 10px;
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(135deg, var(--primary), var(--sub));
+      transition: width 0.3s ease;
+    }
+
+    #progressText {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .result-card {
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top right, rgba(109, 94, 252, 0.12), transparent 30%),
+        linear-gradient(180deg, #ffffff, #f6fbff);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-top-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(20, 184, 166, 0.1);
+      color: #0f766e;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .result-box {
+      border-radius: 26px;
+      background: rgba(255,255,255,0.96);
+      padding: 22px;
+      border: 1px solid #e8ecf4;
+      margin-top: 18px;
+      box-shadow: 0 14px 28px rgba(33, 40, 73, 0.06);
+    }
+
+    .result-title {
+      font-size: 1.7rem;
+      margin: 0 0 8px;
+      letter-spacing: -0.03em;
+    }
+
+    .result-desc {
+      color: var(--muted);
+      margin: 0 0 18px;
+      font-size: 0.98rem;
+    }
+
+    .result-subtitle {
+      margin: 0 0 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .match-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .match-item {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(109, 94, 252, 0.08);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .result-tip {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(109, 94, 252, 0.07), rgba(20, 184, 166, 0.08));
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .category-card {
+      padding: 24px;
+      background: linear-gradient(160deg, #ffffff, #f7f9fe);
+      transition: 0.28s ease;
+    }
+
+    .category-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .category-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(109, 94, 252, 0.12), rgba(20, 184, 166, 0.12));
+      margin-bottom: 14px;
+      font-size: 1.3rem;
+    }
+
+    .category-card strong {
+      font-size: 1.12rem;
+      display: block;
+      margin: 4px 0 8px;
+    }
+
+    .category-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .footer {
+      padding: 46px 0 60px;
+      color: var(--muted);
+    }
+
+    .footer-box {
+      padding: 26px;
+      border-radius: 28px;
+      background: rgba(255,255,255,0.94);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .footer-brand strong {
+      display: block;
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .footer-brand p {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .footer-links span {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: #f7f9fc;
+      border: 1px solid #edf1f6;
+      color: var(--text);
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1080px) {
+      .hero-wrap,
+      .test-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .grid,
+      .category-grid,
+      .popular-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        gap: 18px;
+      }
+
+      .hero-card,
+      .hero-side,
+      .test-card,
+      .result-card,
+      .category-card,
+      .feature-card,
+      .popular-card {
+        padding: 22px;
+      }
+
+      .hero-card {
+        padding: 28px 22px;
+      }
+
+      .grid,
+      .category-grid,
+      .popular-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section {
+        padding: 30px 0;
+      }
+
+      .section-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .footer-box {
+        align-items: flex-start;
+      }
+
+      .footer-links {
+        justify-content: flex-start;
+      }
+
+      .hobby-body p {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="#" class="logo">
+        <span class="logo-badge">✨</span>
+        <span>Hobby Finder</span>
+      </a>
+
+      <nav class="nav" aria-label="주요 메뉴">
+        <a href="#features">서비스 소개</a>
+        <a href="#popular">인기 취미</a>
+        <a href="#hobbies">취미 둘러보기</a>
+        <a href="#test">취미 테스트</a>
+        <a href="#category">카테고리</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-wrap">
+        <div class="hero-card reveal">
+          <div class="eyebrow">당신에게 맞는 새로운 취미를 발견해보세요</div>
+          <h1>내 성향에 맞는<br>취미를 쉽고 감각적으로</h1>
+          <p>
+            Hobby Finder는 사용자의 취향과 라이프스타일을 바탕으로 취미를 추천해주는 반응형 웹 플랫폼입니다.
+            카드형 탐색, 카테고리 필터, 간단한 취미 테스트를 통해 나와 어울리는 취미를 자연스럽게 찾을 수 있어요.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#test">취미 테스트 시작</a>
+            <a class="btn btn-secondary" href="#hobbies">추천 취미 보기</a>
+          </div>
+        </div>
+
+        <aside class="hero-card hero-side reveal">
+          <div class="mini-stat">
+            <div>
+              <span>추천 취미 수</span>
+              <strong>24+</strong>
+            </div>
+            <div class="mini-icon">🎯</div>
+          </div>
+
+          <div class="mini-stat">
+            <div>
+              <span>카테고리</span>
+              <strong>6개</strong>
+            </div>
+            <div class="mini-icon">🗂️</div>
+          </div>
+
+          <div class="mini-stat">
+            <div>
+              <span>모바일 최적화</span>
+              <strong>100%</strong>
+            </div>
+            <div class="mini-icon">📱</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <h2>Hobby Finder의 핵심 경험</h2>
+            <p>단순한 목록이 아니라, 취향과 성향을 바탕으로 취미를 탐색할 수 있도록 구성했어요.</p>
+          </div>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card reveal">
+            <div class="feature-icon">🧭</div>
+            <h3>성향 기반 탐색</h3>
+            <p>사용자 성향과 라이프스타일에 어울리는 취미를 자연스럽게 추천해주는 서비스 흐름을 담았습니다.</p>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="feature-icon">🃏</div>
+            <h3>카드형 UI 구성</h3>
+            <p>정보를 복잡하게 나열하지 않고, 이미지와 태그를 활용한 카드형 UI로 시각적으로 정리했어요.</p>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="feature-icon">📲</div>
+            <h3>반응형 최적화</h3>
+            <p>PC, 태블릿, 모바일 환경에서 카드 수와 버튼 배치가 자연스럽게 바뀌도록 설계했습니다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="popular">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <h2>지금 많이 찾는 인기 취미</h2>
+            <p>가볍게 시작하기 좋고 만족도가 높은 취미를 먼저 만나보세요.</p>
+          </div>
+        </div>
+
+        <div class="popular-grid">
+          <article class="popular-card reveal">
+            <span class="popular-rank">1</span>
+            <h3>드로잉</h3>
+            <p>감정을 자유롭게 표현하고 결과물도 남길 수 있어 꾸준히 인기 있는 취미예요.</p>
+            <span class="popular-tag">감성 창작형</span>
+          </article>
+
+          <article class="popular-card reveal">
+            <span class="popular-rank">2</span>
+            <h3>러닝</h3>
+            <p>시간과 장소의 제약이 적고, 건강과 스트레스 해소를 함께 챙기기 좋아요.</p>
+            <span class="popular-tag">에너지 액티브형</span>
+          </article>
+
+          <article class="popular-card reveal">
+            <span class="popular-rank">3</span>
+            <h3>베이킹</h3>
+            <p>완성된 결과물이 눈에 보여 만족감이 크고, 감성적인 사진 연출도 가능해요.</p>
+            <span class="popular-tag">결과물 만족도 높음</span>
+          </article>
+
+          <article class="popular-card reveal">
+            <span class="popular-rank">4</span>
+            <h3>사진 촬영</h3>
+            <p>일상을 기록하고 시선을 확장할 수 있어 초보자도 부담 없이 시작할 수 있어요.</p>
+            <span class="popular-tag">탐험 야외형</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="hobbies">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <h2>추천 취미 둘러보기</h2>
+            <p>관심 있는 분야를 선택하고 취미 카드를 빠르게 탐색해보세요.</p>
+          </div>
+          <a href="#test" class="section-link">테스트로 추천받기</a>
+        </div>
+
+        <div class="filter-bar reveal" id="filterBar">
+          <button class="chip active" data-filter="all">전체</button>
+          <button class="chip" data-filter="실내">실내</button>
+          <button class="chip" data-filter="야외">야외</button>
+          <button class="chip" data-filter="창작">창작</button>
+          <button class="chip" data-filter="액티브">액티브</button>
+        </div>
+
+        <div class="grid" id="hobbyGrid">
+          <article class="hobby-card reveal" data-category="실내 창작">
+            <div class="hobby-thumb">
+              <img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1200&q=80" alt="드로잉 취미 이미지">
+            </div>
+            <div class="hobby-body">
+              <span class="tag">실내 · 창작</span>
+              <h3>드로잉</h3>
+              <p>가볍게 시작하기 좋고, 나만의 감성을 자유롭게 표현할 수 있는 대표 창작 취미예요.</p>
+              <div class="meta"><span>난이도 ★★☆☆☆</span><span>입문 쉬움</span></div>
+            </div>
+          </article>
+
+          <article class="hobby-card reveal" data-category="야외 액티브">
+            <div class="hobby-thumb">
+              <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80" alt="러닝 취미 이미지">
+            </div>
+            <div class="hobby-body">
+              <span class="tag">야외 · 액티브</span>
+              <h3>러닝</h3>
+              <p>몸도 마음도 가볍게 해주는 취미로, 시간과 장소 제약이 적어 꾸준히 이어가기 좋아요.</p>
+              <div class="meta"><span>난이도 ★★☆☆☆</span><span>활동성 높음</span></div>
+            </div>
+          </article>
+
+          <article class="hobby-card reveal" data-category="실내 창작">
+            <div class="hobby-thumb">
+              <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=80" alt="기타 연주 취미 이미지">
+            </div>
+            <div class="hobby-body">
+              <span class="tag">실내 · 창작</span>
+              <h3>기타 연주</h3>
+              <p>좋아하는 곡을 직접 연주하는 즐거움이 크고, 연습할수록 성취감이 크게 쌓여요.</p>
+              <div class="meta"><span>난이도 ★★★☆☆</span><span>몰입감 높음</span></div>
+            </div>
+          </article>
+
+          <article class="hobby-card reveal" data-category="야외 액티브">
+            <div class="hobby-thumb">
+              <img src="https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=1200&q=80" alt="등산 취미 이미지">
+            </div>
+            <div class="hobby-body">
+              <span class="tag">야외 · 액티브</span>
+              <h3>등산</h3>
+              <p>자연 속에서 리프레시하고 싶을 때 잘 맞는 취미로, 계절의 변화도 함께 즐길 수 있어요.</p>
+              <div class="meta"><span>난이도 ★★★☆☆</span><span>힐링형</span></div>
+            </div>
+          </article>
+
+          <article class="hobby-card reveal" data-category="실내">
+            <div class="hobby-thumb">
+              <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1200&q=80" alt="독서 취미 이미지">
+            </div>
+            <div class="hobby-body">
+              <span class="tag">실내</span>
+              <h3>독서</h3>
+              <p>조용한 시간을 좋아한다면 잘 맞아요. 비용 부담이 적고 접근성이 좋아 시작이 쉬운 편이에요.</p>
+              <div class="meta"><span>난이도 ★☆☆☆☆</span><span>집중형</span></div>
+            </div>
+          </article>
+
+          <article class="hobby-card reveal" data-category="실내 창작">
+            <div class="hobby-thumb">
+              <img src="https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1200&q=80" alt="베이킹 취미 이미지">
+            </div>
+            <div class="hobby-body">
+              <span class="tag">실내 · 창작</span>
+              <h3>베이킹</h3>
+              <p>직접 만든 결과물이 바로 보여 만족감이 크고, 감성적인 비주얼 연출까지 가능한 취미예요.</p>
+              <div class="meta"><span>난이도 ★★★☆☆</span><span>결과물 만족도 높음</span></div>
+            </div>
+          </article>
+
+          <article class="hobby-card reveal" data-category="야외">
+            <div class="hobby-thumb">
+              <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80" alt="사진 촬영 취미 이미지">
+            </div>
+            <div class="hobby-body">
+              <span class="tag">야외</span>
+              <h3>사진 촬영</h3>
+              <p>일상의 순간을 기록하는 재미가 있고, SNS나 포트폴리오로도 자연스럽게 확장할 수 있어요.</p>
+              <div class="meta"><span>난이도 ★★☆☆☆</span><span>기록형</span></div>
+            </div>
+          </article>
+
+          <article class="hobby-card reveal" data-category="실내 액티브">
+            <div class="hobby-thumb">
+              <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1200&q=80" alt="요가 취미 이미지">
+            </div>
+            <div class="hobby-body">
+              <span class="tag">실내 · 액티브</span>
+              <h3>요가</h3>
+              <p>몸의 긴장을 풀고 균형을 잡아주는 취미예요. 혼자서도 클래스에서도 부담 없이 즐길 수 있어요.</p>
+              <div class="meta"><span>난이도 ★★☆☆☆</span><span>밸런스형</span></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="test">
+      <div class="container test-layout">
+        <div class="test-card reveal">
+          <div class="section-head">
+            <div>
+              <h2>간단 취미 테스트</h2>
+              <p>질문에 답하면 성향에 맞는 취미를 추천해줘요.</p>
+            </div>
+          </div>
+
+          <div class="question" data-question="0">
+            <h3>1. 주말에는 어떤 시간이 더 좋나요?</h3>
+            <div class="option-list">
+              <button class="option" data-value="실내">집에서 조용히 보내는 시간</button>
+              <button class="option" data-value="야외">밖에서 움직이고 탐험하는 시간</button>
+            </div>
+          </div>
+
+          <div class="question" data-question="1">
+            <h3>2. 취미를 하면서 가장 끌리는 요소는?</h3>
+            <div class="option-list">
+              <button class="option" data-value="창작">무언가를 직접 만들고 표현하는 것</button>
+              <button class="option" data-value="액티브">몸을 움직이며 에너지를 쓰는 것</button>
+            </div>
+          </div>
+
+          <div class="question" data-question="2">
+            <h3>3. 결과물과 과정 중 더 중요한 건?</h3>
+            <div class="option-list">
+              <button class="option" data-value="창작">눈에 보이는 결과물이 남는 것</button>
+              <button class="option" data-value="야외">경험과 순간을 즐기는 것</button>
+            </div>
+          </div>
+
+          <div class="progress" aria-label="테스트 진행률">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+          <p id="progressText">아직 선택 전이에요.</p>
+        </div>
+
+        <div class="result-card reveal">
+          <div class="result-top-badge">맞춤 추천 결과</div>
+
+          <div class="section-head" style="margin-bottom: 0;">
+            <div>
+              <h2>추천 결과</h2>
+              <p>선택한 성향을 바탕으로 가장 잘 맞는 취미를 보여줘요.</p>
+            </div>
+          </div>
+
+          <div class="result-box">
+            <h3 class="result-title" id="resultTitle">테스트를 시작해보세요</h3>
+            <p class="result-desc" id="resultDesc">질문을 선택하면 성향에 맞는 추천 취미가 표시됩니다.</p>
+
+            <p class="result-subtitle">추천 취미</p>
+            <div class="match-list" id="matchList">
+              <span class="match-item">드로잉</span>
+              <span class="match-item">러닝</span>
+              <span class="match-item">사진 촬영</span>
+            </div>
+
+            <div class="result-tip" id="resultTip">
+              간단한 선택만으로도 나에게 더 잘 맞는 취미를 빠르게 탐색할 수 있어요.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="category">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <h2>카테고리로 빠르게 탐색</h2>
+            <p>취향에 따라 원하는 분야부터 가볍게 시작해보세요.</p>
+          </div>
+        </div>
+
+        <div class="category-grid">
+          <article class="category-card reveal">
+            <div class="category-icon">🎨</div>
+            <strong>창작 취미</strong>
+            <p>드로잉, 공예, 악기, 글쓰기처럼 나만의 결과물을 만들어내는 취미예요.</p>
+          </article>
+
+          <article class="category-card reveal">
+            <div class="category-icon">🏃</div>
+            <strong>액티브 취미</strong>
+            <p>러닝, 요가, 클라이밍처럼 몸을 움직이며 활력을 얻는 활동형 취미예요.</p>
+          </article>
+
+          <article class="category-card reveal">
+            <div class="category-icon">🌿</div>
+            <strong>야외 취미</strong>
+            <p>사진, 등산, 산책처럼 바깥에서 새로운 풍경과 경험을 마주하는 취미예요.</p>
+          </article>
+
+          <article class="category-card reveal">
+            <div class="category-icon">☕</div>
+            <strong>실내 취미</strong>
+            <p>독서, 베이킹, 영화 감상처럼 편안한 공간에서 여유롭게 즐기기 좋은 취미예요.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="footer">
+    <div class="container">
+      <div class="footer-box reveal">
+        <div class="footer-brand">
+          <strong>Hobby Finder</strong>
+          <p>Discover hobbies that match your personality and lifestyle.</p>
+        </div>
+
+        <div class="footer-links">
+          <span>Hobby Discovery</span>
+          <span>Personality Test</span>
+          <span>Category Exploration</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const chips = document.querySelectorAll('.chip');
+    const cards = document.querySelectorAll('.hobby-card');
+
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const filter = chip.dataset.filter;
+
+        cards.forEach(card => {
+          const category = card.dataset.category;
+          card.style.display = filter === 'all' || category.includes(filter) ? '' : 'none';
+        });
+      });
+    });
+
+    const answers = {};
+    const resultTitle = document.getElementById('resultTitle');
+    const resultDesc = document.getElementById('resultDesc');
+    const matchList = document.getElementById('matchList');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const resultTip = document.getElementById('resultTip');
+
+    document.querySelectorAll('.question').forEach((question, qIndex) => {
+      const options = question.querySelectorAll('.option');
+      options.forEach(option => {
+        option.addEventListener('click', () => {
+          options.forEach(btn => btn.classList.remove('selected'));
+          option.classList.add('selected');
+          answers[qIndex] = option.dataset.value;
+          updateResult();
+        });
+      });
+    });
+
+    function updateResult() {
+      const values = Object.values(answers);
+      const progress = (values.length / 3) * 100;
+      progressBar.style.width = progress + '%';
+      progressText.textContent = `${values.length} / 3 선택 완료`;
+
+      if (values.length < 3) {
+        resultTitle.textContent = '조금만 더 선택해보세요';
+        resultDesc.textContent = '모든 질문에 답하면 더 정확한 추천 결과를 볼 수 있어요.';
+        resultTip.textContent = '선택이 완료되면 성향에 맞는 취미 유형과 추천 활동이 함께 표시됩니다.';
+        return;
+      }
+
+      const count = values.reduce((acc, cur) => {
+        acc[cur] = (acc[cur] || 0) + 1;
+        return acc;
+      }, {});
+
+      const sorted = Object.entries(count)
+        .sort((a, b) => b[1] - a[1])
+        .map(item => item[0]);
+
+      const top = sorted[0];
+
+      let title = '균형 잡힌 취미형';
+      let desc = '다양한 취미를 두루 잘 즐길 수 있는 타입이에요.';
+      let hobbies = ['사진 촬영', '요가', '독서'];
+      let tip = '한 가지에 제한되지 않고 여러 분야를 가볍게 경험해보는 방식이 잘 맞아요.';
+
+      if (top === '창작') {
+        title = '감성 창작형';
+        desc = '표현하고 만드는 과정에서 즐거움을 느끼는 타입이에요.';
+        hobbies = ['드로잉', '기타 연주', '베이킹'];
+        tip = '직접 만들고 남기는 경험에서 만족감을 크게 느끼는 편이라 창작 중심 취미가 잘 어울려요.';
+      } else if (top === '액티브') {
+        title = '에너지 액티브형';
+        desc = '몸을 움직이면서 스트레스를 푸는 활동이 잘 맞는 타입이에요.';
+        hobbies = ['러닝', '요가', '등산'];
+        tip = '활동량이 있는 취미를 선택할수록 일상에도 활력과 리듬이 생기기 쉬워요.';
+      } else if (top === '실내') {
+        title = '몰입 실내형';
+        desc = '조용하고 편안한 공간에서 집중하는 취미가 잘 어울려요.';
+        hobbies = ['독서', '드로잉', '베이킹'];
+        tip = '혼자만의 시간을 활용해 천천히 몰입할 수 있는 취미가 만족도를 높여줄 수 있어요.';
+      } else if (top === '야외') {
+        title = '탐험 야외형';
+        desc = '새로운 풍경과 경험을 즐기는 취미가 잘 맞는 타입이에요.';
+        hobbies = ['사진 촬영', '러닝', '등산'];
+        tip = '밖으로 나가 몸과 시선을 함께 움직이는 활동이 더 큰 즐거움으로 이어질 가능성이 높아요.';
+      }
+
+      resultTitle.textContent = title;
+      resultDesc.textContent = desc;
+      resultTip.textContent = tip;
+      matchList.innerHTML = hobbies.map(hobby => `<span class="match-item">${hobby}</span>`).join('');
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('show');
+        }
+      });
+    }, {
+      threshold: 0.15
+    });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
